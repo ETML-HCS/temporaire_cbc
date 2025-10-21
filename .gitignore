@@ -1,0 +1,9 @@
+# Static site
+.DS_Store
+Thumbs.db
+node_modules/
+.git-credentials
+.env
+/dist
+/build
+/*.log
