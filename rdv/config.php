@@ -9,13 +9,13 @@ $SLOT_STEP_MINUTES = 30; // 15 or 30 recommended
 
 // Default opening hours if none are configured in admin (per weekday 0=Sun .. 6=Sat)
 $DEFAULT_OPENING = [
-  0 => null,               // Sunday closed
-  1 => ['09:00','18:00'],  // Mon
-  2 => ['09:00','18:00'],  // Tue
-  3 => ['09:00','18:00'],  // Wed
-  4 => ['09:00','18:00'],  // Thu
-  5 => ['09:00','17:00'],  // Fri
-  6 => ['10:00','14:00'],  // Sat
+  0 => null,                  // Dimanche: fermé
+  1 => ['09:00','18:30'],     // Lundi
+  2 => null,                  // Mardi: fermé
+  3 => ['09:00','18:30'],     // Mercredi
+  4 => ['09:00','18:30'],     // Jeudi
+  5 => ['09:00','18:30'],     // Vendredi
+  6 => ['09:00','16:30'],     // Samedi
 ];
 
 // Admin credentials (change the password!)

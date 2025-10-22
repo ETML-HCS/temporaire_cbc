@@ -60,6 +60,18 @@ function init_db(PDO $pdo): void {
     FOREIGN KEY (specialist_id) REFERENCES specialists(id) ON DELETE CASCADE,
     FOREIGN KEY (treatment_id) REFERENCES treatments(id) ON DELETE CASCADE
   )');
+
+  // Seed opening hours with defaults if empty
+  $cnt = (int)$pdo->query('SELECT COUNT(*) FROM opening_hours')->fetchColumn();
+  if ($cnt === 0) {
+    global $DEFAULT_OPENING;
+    $stmt = $pdo->prepare('INSERT INTO opening_hours(weekday,start,end) VALUES(?,?,?)');
+    foreach ($DEFAULT_OPENING as $w => $range) {
+      if (is_array($range) && count($range) === 2) {
+        $stmt->execute([(int)$w, $range[0], $range[1]]);
+      }
+    }
+  }
 }
 
 function get_opening_for_weekday(PDO $pdo, int $weekday): ?array {
