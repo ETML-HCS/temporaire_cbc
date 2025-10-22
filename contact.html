@@ -26,7 +26,7 @@
           <a href="equipe.html" class="nav-link">Équipe</a>
           <a href="contact.html" class="nav-link is-active">Contact</a>
         </nav>
-        <div class="header-cta"><a class="btn btn-primary" href="#rdv">Prendre rendez-vous</a><button class="burger" data-burger aria-label="Ouvrir le menu"><span></span><span></span><span></span></button></div>
+        <div class="header-cta"><a class="tel" href="tel:+41000000000" aria-label="Appeler la clinique">+41 00 000 00 00</a><a class="btn btn-primary" href="#rdv">Prendre rendez-vous</a><button class="burger" data-burger aria-label="Ouvrir le menu"><span></span><span></span><span></span></button></div>
       </div>
     </header>
 
@@ -51,11 +51,13 @@
           <div id="rdv">
             <h3>Prendre rendez-vous</h3>
             <p class="muted">Indiquez vos disponibilités, nous vous recontactons pour confirmer.</p>
-            <form class="grid" style="grid-template-columns: 1fr 1fr; gap: 12px" onsubmit="event.preventDefault(); alert('Merci, nous revenons vers vous rapidement.'); this.reset();">
+            <form class="grid" style="grid-template-columns: 1fr 1fr; gap: 12px" method="POST" action="mailto:contact@cliniquebellecour.ch" enctype="text/plain">
               <label>Nom<input required type="text" name="nom" placeholder="Votre nom" style="width:100%"></label>
               <label>Prénom<input required type="text" name="prenom" placeholder="Votre prénom" style="width:100%"></label>
               <label style="grid-column: span 2">E-mail<input required type="email" name="email" placeholder="nom@domaine.ch" style="width:100%"></label>
               <label style="grid-column: span 2">Message<textarea name="message" placeholder="Votre demande" rows="4" style="width:100%"></textarea></label>
+              <input class="hidden-hp" type="text" name="hp_field" tabindex="-1" autocomplete="off" aria-hidden="true">
+              <p class="form-note" style="grid-column: span 2">En cliquant sur Envoyer, vous acceptez d’être recontacté(e). Aucune donnée n’est cédée à des tiers.</p>
               <div style="grid-column: span 2"><button class="btn btn-primary" type="submit">Envoyer</button></div>
             </form>
           </div>
@@ -67,5 +69,9 @@
       <div class="container footnote"><small>© <span id="year"></span> Clinique Bellecour. Tous droits réservés.</small></div>
     </footer>
     <script src="assets/js/main.js" defer></script>
+    <nav class="mobile-cta" aria-label="Actions rapides">
+      <a href="tel:+41000000000" aria-label="Appeler la clinique">Appeler</a>
+      <a href="#rdv" class="btn-primary" aria-label="Prendre rendez-vous">Prendre rendez-vous</a>
+    </nav>
   </body>
   </html>

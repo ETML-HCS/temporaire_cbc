@@ -202,6 +202,20 @@ input:focus, textarea:focus { border-color: rgba(212,175,55,.7); outline: 2px so
 .link::after, a:not(.btn):not(.logo):not(.nav-link)::after { content: ""; position: absolute; left: 0; bottom: -2px; height: 1px; width: 100%; background: linear-gradient(90deg, rgba(212,175,55, .8), rgba(212,175,55, .2)); transform: scaleX(0); transform-origin: left; transition: transform .25s ease; }
 .link:hover::after, a:not(.btn):not(.logo):not(.nav-link):hover::after { transform: scaleX(1); }
 
+/* Persistent mobile CTA bar */
+.mobile-cta { position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%); z-index: 50; display: flex; gap: 10px; background: rgba(15,15,15,.9); padding: 8px; border-radius: 999px; box-shadow: 0 8px 28px rgba(2,6,23,.25); backdrop-filter: saturate(1.2) blur(8px); }
+.mobile-cta a { color: #f5f5f5; text-decoration: none; padding: 10px 14px; border-radius: 999px; font-weight: 600; line-height: 1; border: 1px solid rgba(255,255,255,.08); }
+.mobile-cta a.btn-primary { background: linear-gradient(135deg, #d4af37, #c19b2e); color: #111; border-color: transparent; }
+@media (min-width: 840px) { .mobile-cta { display: none; } }
+
+/* Header tweaks for conversion */
+.header-cta .tel { display: none; color: var(--text); opacity: .9; }
+@media (min-width: 1024px) { .header-cta .tel { display: inline-block; margin-right: 8px; font-weight: 600; } }
+
+/* Contact form small helpers */
+.form-note { font-size: 12px; color: var(--muted); margin-top: -6px; margin-bottom: 8px; }
+.hidden-hp { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .reveal { transition: none; }
