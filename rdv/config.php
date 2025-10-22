@@ -22,6 +22,12 @@ $DEFAULT_OPENING = [
 $ADMIN_USER = 'admin';
 $ADMIN_PASS_HASH = password_hash('ChangezMoi!2025', PASSWORD_DEFAULT);
 
+// Optional local overrides (do NOT commit secrets)
+// Create rdv/local.php with:
+//   <?php $ADMIN_USER='votreuser'; $ADMIN_PASS_HASH=password_hash('votremdp', PASSWORD_DEFAULT);
+if (file_exists(__DIR__ . '/local.php')) {
+  include __DIR__ . '/local.php';
+}
+
 // Luxury theme accents (used in inline styles)
 $BRAND_ACCENT = '#d4af37'; // gold
-
