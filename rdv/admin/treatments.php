@@ -6,11 +6,11 @@ $pdo = db();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (isset($_POST['create'])) {
-    $stmt = $pdo->prepare('INSERT INTO treatments(name, duration_min, category, active) VALUES(?,?,?,1)');
-    $stmt->execute([$_POST['name'], (int)$_POST['duration_min'], $_POST['category'] ?? null]);
+    $stmt = $pdo->prepare('INSERT INTO treatments(name, duration_min, category, active, price_chf) VALUES(?,?,?,?,?)');
+    $stmt->execute([$_POST['name'], (int)$_POST['duration_min'], $_POST['category'] ?? null, 1, $_POST['price_chf'] !== '' ? (float)$_POST['price_chf'] : null]);
   } elseif (isset($_POST['update'])) {
-    $stmt = $pdo->prepare('UPDATE treatments SET name=?, duration_min=?, category=?, active=? WHERE id=?');
-    $stmt->execute([$_POST['name'], (int)$_POST['duration_min'], $_POST['category'] ?? null, (int)($_POST['active']??1), (int)$_POST['id']]);
+    $stmt = $pdo->prepare('UPDATE treatments SET name=?, duration_min=?, category=?, active=?, price_chf=? WHERE id=?');
+    $stmt->execute([$_POST['name'], (int)$_POST['duration_min'], $_POST['category'] ?? null, (int)($_POST['active']??1), $_POST['price_chf'] !== '' ? (float)$_POST['price_chf'] : null, (int)$_POST['id']]);
   } elseif (isset($_POST['delete'])) {
     $stmt = $pdo->prepare('DELETE FROM treatments WHERE id=?');
     $stmt->execute([(int)$_POST['id']]);
@@ -18,10 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   header('Location: treatments.php'); exit;
 }
 
-$treats = $pdo->query('SELECT * FROM treatments ORDER BY active DESC, name')->fetchAll(PDO::FETCH_ASSOC);
+$treats = $pdo->query('SELECT * FROM treatments ORDER BY active DESC, category, name')->fetchAll(PDO::FETCH_ASSOC);
 ?><!doctype html>
 <html lang="fr">
-  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Prestations — Admin</title><link rel="stylesheet" href="/assets/css/style.css" /><style>body{background:#0b0b0b;color:#f5f5f5}.wrap{max-width:980px;margin:28px auto;padding:0 16px}.card{background:linear-gradient(135deg,#0f0f0f,#151515);border:1px solid #1f2937;border-radius:14px;padding:20px}.row{display:grid;grid-template-columns:1fr 140px 1fr auto auto;gap:8px;align-items:center} input,select{background:#0f1115;color:#e5e7eb;border:1px solid #2a3442;border-radius:10px;padding:10px;width:100%}.btn{padding:10px 14px;border-radius:10px;border:1px solid #2a3442;background:linear-gradient(135deg,#d4af37,#c19b2e);color:#111;font-weight:800;text-decoration:none}</style></head>
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Prestations — Admin</title><link rel="stylesheet" href="/assets/css/style.css" /><style>body{background:#0b0b0b;color:#f5f5f5}.wrap{max-width:980px;margin:28px auto;padding:0 16px}.card{background:linear-gradient(135deg,#0f0f0f,#151515);border:1px solid #1f2937;border-radius:14px;padding:20px}.row{display:grid;grid-template-columns:1fr 140px 1fr 120px auto auto;gap:8px;align-items:center} input,select{background:#0f1115;color:#e5e7eb;border:1px solid #2a3442;border-radius:10px;padding:10px;width:100%}.btn{padding:10px 14px;border-radius:10px;border:1px solid #2a3442;background:linear-gradient(135deg,#d4af37,#c19b2e);color:#111;font-weight:800;text-decoration:none}</style></head>
   <body>
     <div class="wrap"><div class="card">
       <h1>Prestations</h1>
@@ -30,6 +30,7 @@ $treats = $pdo->query('SELECT * FROM treatments ORDER BY active DESC, name')->fe
         <input name="name" placeholder="Nom" required />
         <input name="duration_min" type="number" min="10" step="5" placeholder="Durée (min)" required />
         <input name="category" placeholder="Catégorie (facultatif)" />
+        <input name="price_chf" type="number" step="0.01" placeholder="Prix CHF (optionnel)" />
         <button class="btn" type="submit">Ajouter</button>
       </form>
       <h3 style="margin-top:18px">Liste</h3>
@@ -39,6 +40,7 @@ $treats = $pdo->query('SELECT * FROM treatments ORDER BY active DESC, name')->fe
         <input name="name" value="<?= h($t['name']) ?>" />
         <input name="duration_min" type="number" min="10" step="5" value="<?= (int)$t['duration_min'] ?>" />
         <input name="category" value="<?= h($t['category']) ?>" />
+        <input name="price_chf" type="number" step="0.01" value="<?= isset($t['price_chf'])? h($t['price_chf']) : '' ?>" />
         <select name="active"><option value="1" <?= $t['active']? 'selected':'' ?>>Actif</option><option value="0" <?= !$t['active']? 'selected':'' ?>>Inactif</option></select>
         <div style="display:flex; gap:6px">
           <button class="btn" name="update" value="1">Enregistrer</button>
@@ -50,4 +52,3 @@ $treats = $pdo->query('SELECT * FROM treatments ORDER BY active DESC, name')->fe
     </div></div>
   </body>
   </html>
-

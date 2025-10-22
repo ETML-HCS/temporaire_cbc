@@ -3,7 +3,7 @@ require_once __DIR__ . '/../lib.php';
 $pdo = db();
 // Prefetch minimal lists for initial render
 $specialists = $pdo->query('SELECT id,name,title,category FROM specialists WHERE active=1 ORDER BY name')->fetchAll(PDO::FETCH_ASSOC);
-$treatments = $pdo->query('SELECT id,name,duration_min FROM treatments WHERE active=1 ORDER BY name')->fetchAll(PDO::FETCH_ASSOC);
+$treatments = $pdo->query('SELECT id,name,duration_min,price_chf,category FROM treatments WHERE active=1 ORDER BY category, name')->fetchAll(PDO::FETCH_ASSOC);
 ?><!doctype html>
 <html lang="fr">
   <head>
@@ -44,9 +44,9 @@ $treatments = $pdo->query('SELECT id,name,duration_min FROM treatments WHERE act
             <label>Prestation
               <select id="treatment" required>
                 <option value="">Sélectionner</option>
-                <?php foreach ($treatments as $t): ?>
-                  <option value="<?= (int)$t['id'] ?>"><?php echo h($t['name']) . ' (' . (int)$t['duration_min'] . ' min)'; ?></option>
-                <?php endforeach; ?>
+                <?php $curCat=null; foreach ($treatments as $t): $cat=$t['category'] ?: 'Autres'; if ($cat!==$curCat) { if($curCat!==null) echo '</optgroup>'; echo '<optgroup label="'.h($cat).'">'; $curCat=$cat; } $label = h($t['name']).' ('.(int)$t['duration_min'].' min'; if (!empty($t['price_chf'])) { $label .= ' • '.number_format((float)$t['price_chf'],2,'.','').' CHF'; } $label .= ')'; ?>
+                  <option value="<?= (int)$t['id'] ?>"><?=$label?></option>
+                <?php endforeach; if($curCat!==null) echo '</optgroup>'; ?>
               </select>
             </label>
             <label>Date souhaitée
@@ -109,4 +109,3 @@ $treatments = $pdo->query('SELECT id,name,duration_min FROM treatments WHERE act
     </script>
   </body>
   </html>
-

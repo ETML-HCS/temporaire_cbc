@@ -31,6 +31,10 @@ function init_db(PDO $pdo): void {
     category TEXT,
     active INTEGER NOT NULL DEFAULT 1
   )');
+  // Schema migration: add price_chf if missing
+  $cols = $pdo->query("PRAGMA table_info(treatments)")->fetchAll(PDO::FETCH_ASSOC);
+  $hasPrice = false; foreach ($cols as $c) { if (strcasecmp($c['name'], 'price_chf')===0) { $hasPrice = true; break; } }
+  if (!$hasPrice) { $pdo->exec('ALTER TABLE treatments ADD COLUMN price_chf REAL'); }
   $pdo->exec('CREATE TABLE IF NOT EXISTS specialist_treatments (
     specialist_id INTEGER NOT NULL,
     treatment_id INTEGER NOT NULL,
@@ -101,8 +105,8 @@ function init_db(PDO $pdo): void {
   // Ensure free information appointment treatment exists
   $existsInfo = (int)$pdo->query("SELECT COUNT(*) FROM treatments WHERE name = 'Rendez-vous d''information (gratuit)'")->fetchColumn();
   if ($existsInfo === 0) {
-    $stmtT = $pdo->prepare('INSERT INTO treatments(name, duration_min, category, active) VALUES(?,?,?,1)');
-    $stmtT->execute(["Rendez-vous d'information (gratuit)", 30, 'Information']);
+    $stmtT = $pdo->prepare('INSERT INTO treatments(name, duration_min, category, active, price_chf) VALUES(?,?,?,?,NULL)');
+    $stmtT->execute(["Rendez-vous d'information (gratuit)", 30, 'Information', 1]);
     $infoId = (int)$pdo->lastInsertId();
     // Map to all specialists so quiconque peut le proposer
     $specIds = $pdo->query('SELECT id FROM specialists WHERE active=1')->fetchAll(PDO::FETCH_COLUMN);
@@ -110,6 +114,34 @@ function init_db(PDO $pdo): void {
       $stmtMap = $pdo->prepare('INSERT OR IGNORE INTO specialist_treatments(specialist_id, treatment_id) VALUES(?,?)');
       foreach ($specIds as $sid) { $stmtMap->execute([(int)$sid, $infoId]); }
     }
+  }
+
+  // Seed simplified core treatments if table is almost empty
+  $treatCount = (int)$pdo->query('SELECT COUNT(*) FROM treatments')->fetchColumn();
+  if ($treatCount <= 3) { // only default ones exist
+    $stmtT = $pdo->prepare('INSERT INTO treatments(name, duration_min, category, active, price_chf) VALUES(?,?,?,?,?)');
+    // Épilation laser (zones génériques)
+    $stmtT->execute(['Épilation laser — petite zone', 20, 'Épilation laser', 1, 62]);
+    $stmtT->execute(['Épilation laser — zone moyenne', 30, 'Épilation laser', 1, 122]);
+    $stmtT->execute(['Épilation laser — zone large', 45, 'Épilation laser', 1, 222]);
+    $stmtT->execute(['Épilation laser — jambes complètes', 75, 'Épilation laser', 1, 658]);
+    // Épilation électrique
+    $stmtT->execute(['Épilation électrique — 30 min', 30, 'Épilation électrique', 1, 148]);
+    $stmtT->execute(['Épilation électrique — 60 min', 60, 'Épilation électrique', 1, 282]);
+    // Injections — Toxine botulique
+    $stmtT->execute(['Toxine botulique — 1 zone', 30, 'Injections', 1, 420]);
+    $stmtT->execute(['Toxine botulique — 2 zones', 35, 'Injections', 1, 470]);
+    $stmtT->execute(['Toxine botulique — 3 zones', 40, 'Injections', 1, 520]);
+    // Injections — Acide hyaluronique / Profhilo / Radiesse
+    $stmtT->execute(['Acide hyaluronique — 1 seringue', 40, 'Injections', 1, 480]);
+    $stmtT->execute(['Profhilo — 1 zone (2 injections)', 30, 'Injections', 1, 800]);
+    $stmtT->execute(['Radiesse — 1 seringue', 40, 'Injections', 1, 620]);
+    // Peau / Laser
+    $stmtT->execute(['Mésothérapie/Microneedling — visage', 45, 'Peau', 1, 280]);
+    $stmtT->execute(['Peeling visage — à partir de', 30, 'Peau', 1, 190]);
+    $stmtT->execute(['Laser vasculaire — à partir de', 30, 'Peau', 1, 300]);
+    // Corps / Drainage
+    $stmtT->execute(['Drainage lymphatique — 60 min', 60, 'Corps', 1, 180]);
   }
 }
 
