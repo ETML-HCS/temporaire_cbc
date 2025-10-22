@@ -72,6 +72,31 @@ function init_db(PDO $pdo): void {
       }
     }
   }
+
+  // Seed specialists (first install only)
+  $cntSpec = (int)$pdo->query('SELECT COUNT(*) FROM specialists')->fetchColumn();
+  if ($cntSpec === 0) {
+    $stmt = $pdo->prepare('INSERT INTO specialists(name,title,category,bio,active) VALUES(?,?,?,?,1)');
+    $stmt->execute([
+      'Dr. Mickaël Poiraud',
+      'Médecin — esthétique médicale',
+      'Dr. esthétique médicale',
+      'Médecine esthétique, approche naturelle et sûre.'
+    ]);
+    $stmt->execute([
+      'Aleksandra Moskovchuk',
+      'Spécialiste dermo‑esthétique',
+      'dermo-esthétique',
+      'Prise en charge dermo‑esthétique, qualité de peau, laser.'
+    ]);
+    $stmt->execute([
+      'Stéphanie',
+      'Spécialiste épilation',
+      'dermo-esthétique',
+      'Épilation et soins techniques avec exigence de résultats.'
+    ]);
+    // Note: Kateryna Pursheva (accueil) non réservable, donc non ajoutée comme spécialiste.
+  }
 }
 
 function get_opening_for_weekday(PDO $pdo, int $weekday): ?array {
