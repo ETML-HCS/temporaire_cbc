@@ -97,6 +97,20 @@ function init_db(PDO $pdo): void {
     ]);
     // Note: Kateryna Pursheva (accueil) non réservable, donc non ajoutée comme spécialiste.
   }
+
+  // Ensure free information appointment treatment exists
+  $existsInfo = (int)$pdo->query("SELECT COUNT(*) FROM treatments WHERE name = 'Rendez-vous d''information (gratuit)'")->fetchColumn();
+  if ($existsInfo === 0) {
+    $stmtT = $pdo->prepare('INSERT INTO treatments(name, duration_min, category, active) VALUES(?,?,?,1)');
+    $stmtT->execute(["Rendez-vous d'information (gratuit)", 30, 'Information']);
+    $infoId = (int)$pdo->lastInsertId();
+    // Map to all specialists so quiconque peut le proposer
+    $specIds = $pdo->query('SELECT id FROM specialists WHERE active=1')->fetchAll(PDO::FETCH_COLUMN);
+    if ($specIds) {
+      $stmtMap = $pdo->prepare('INSERT OR IGNORE INTO specialist_treatments(specialist_id, treatment_id) VALUES(?,?)');
+      foreach ($specIds as $sid) { $stmtMap->execute([(int)$sid, $infoId]); }
+    }
+  }
 }
 
 function get_opening_for_weekday(PDO $pdo, int $weekday): ?array {
