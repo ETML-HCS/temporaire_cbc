@@ -56,7 +56,7 @@ function init_db(PDO $pdo): void {
     client_phone TEXT,
     notes TEXT,
     status TEXT NOT NULL DEFAULT "pending" CHECK(status IN ("pending","confirmed","cancelled")),
-    created_at TEXT NOT NULL DEFAULT (datetime("now")),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (specialist_id) REFERENCES specialists(id) ON DELETE CASCADE,
     FOREIGN KEY (treatment_id) REFERENCES treatments(id) ON DELETE CASCADE
   )');
@@ -70,4 +70,3 @@ function get_opening_for_weekday(PDO $pdo, int $weekday): ?array {
   global $DEFAULT_OPENING;
   return $DEFAULT_OPENING[$weekday] ?? null;
 }
-
