@@ -102,7 +102,7 @@ h3 { font-size: clamp(18px, 2.4vw, 22px); }
 .media-image { position: absolute; inset: 0; background: radial-gradient(120% 100% at 80% 0%, rgba(212,175,55,.12), transparent), linear-gradient(180deg, #fff, #f8f8f8); }
 
 /* Hero with photo (dark composition) */
-.media-image.has-photo { background: url('../img/hero-placeholder.svg') center/cover no-repeat, radial-gradient(120% 100% at 80% 0%, rgba(212,175,55,.08), transparent), linear-gradient(180deg, #0f0f0f, #131313); }
+.media-image.has-photo { background: url('../img/welcom_cliniqueBelleCour.jpg') center/cover no-repeat, radial-gradient(120% 100% at 80% 0%, rgba(212,175,55,.08), transparent), linear-gradient(180deg, #0f0f0f, #131313); }
 
 @media (min-width: 960px) {
   .grid-hero { grid-template-columns: 1.1fr 1fr; }
